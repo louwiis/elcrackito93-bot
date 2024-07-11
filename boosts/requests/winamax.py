@@ -54,7 +54,7 @@ async def winamax(bot, cache_path):
 
                 boost['intitule'] = outcomes[f'{outcomeId}']['label']
                 boost['odd'] = odds[f'{outcomeId}']
-                boost['title'] = match['title']
+                boost['title'] = match['title'].split(':', 1)[1].strip()
 
                 finalBoosts.append({
                     'intitule': boost['intitule'],
