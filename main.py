@@ -8,8 +8,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-sys.path.append('boosts')
-from utils import search_boosts
+from boosts.utils import search_boosts
 
 
 intents = discord.Intents.default()
@@ -25,6 +24,12 @@ SERVER_ID = os.getenv('SERVER_ID')
 # )
 # async def first_command(interaction):
 #     await interaction.response.send_message("Pong!", ephemeral=True)
+
+@bot.event
+async def on_message(message):
+    # Check if the message content matches the "started a thread" message format
+    if message.type == discord.MessageType.thread_created:
+        await message.delete()
 
 # every 10 seconds
 @tasks.loop(seconds=15)
