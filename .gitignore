@@ -1,6 +1,6 @@
 .env
 .venv
 
-logs/
+*.log
 
 boosts/cache.json
