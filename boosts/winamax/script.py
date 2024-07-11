@@ -117,7 +117,18 @@ async def winamax(bot, cache_path):
                 else:
                     boost['message_id'] = boostCache['message_id']
 
-                    if boostCache['boostedOdd'] != boost['boostedOdd']:
+                    list = [
+                        'odd',
+                        'boostedOdd',
+                        'maxBet',
+                        'title',
+                        'intitule'
+                    ]
+
+                    if any(boost[el] != boostCache[el] for el in list):
+                        cache.remove(boostCache)
+                        cache.append(boost)
+
                         channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
                         message = await channel.fetch_message(boostCache['message_id'])
 
