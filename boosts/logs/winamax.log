@@ -1,0 +1,3 @@
+2024-07-11 13:27:08,914 WARNING:PyNaCl is not installed, voice will NOT be supported
+2024-07-11 13:27:08,914 INFO:logging in using static token
+2024-07-11 13:27:09,749 INFO:Shard ID None has connected to Gateway (Session ID: b994d437e37d3903acd932dd0c802fa2).
