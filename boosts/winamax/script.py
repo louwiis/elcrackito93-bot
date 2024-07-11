@@ -99,7 +99,7 @@ async def winamax(bot, cache_path):
                 embed.add_field(name='Côte boostée', value=boost['boostedOdd'], inline=True)
                 embed.add_field(name='Mise max', value=boost['maxBet'], inline=True)
 
-                boostCache = next((boostCache for boostCache in cache if boost["title"] == boostCache["title"] and boost["intitule"] == boostCache["intitule"]), None)
+                boostCache = next((boostCache for boostCache in cache if boost["intitule"] == boostCache["intitule"]), None)
                 
                 if not boostCache:
                     if boost['bigBoost']:
@@ -122,7 +122,6 @@ async def winamax(bot, cache_path):
                         'boostedOdd',
                         'maxBet',
                         'title',
-                        'intitule'
                     ]
 
                     if any(boost[el] != boostCache[el] for el in list):
