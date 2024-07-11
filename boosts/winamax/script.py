@@ -4,6 +4,7 @@ import re
 import logging
 import json
 import os
+from datetime import datetime, timedelta
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, filename='./boosts/winamax/log.log', format='%(asctime)s %(levelname)s:%(message)s')
@@ -55,6 +56,7 @@ async def winamax(bot, cache_path):
                 boost['intitule'] = outcomes[f'{outcomeId}']['label']
                 boost['odd'] = odds[f'{outcomeId}']
                 boost['title'] = match['title'].split(':', 1)[1].strip()
+                boost['startTime'] = datetime.fromtimestamp(match['matchStart'])
 
                 finalBoosts.append({
                     'intitule': boost['intitule'],
@@ -64,19 +66,29 @@ async def winamax(bot, cache_path):
                     'bigBoost': boost['marketId'] != 9038,
                     'maxBet': boost['betTypeName'].lower().split('mise max ')[1].split(' €')[0],
                     'sport': 'football',
-                    'betAnalytixBetName': f"{boost['title']} / {boost['intitule']}"
+                    'betAnalytixBetName': f"{boost['title']} / {boost['intitule']}",
+                    'startTime': boost['startTime'].isoformat(),
                 })
 
             MAIN_CHANNEL_ID = int(os.getenv('WINAMAX_MAIN_CHANNEL_ID'))
             SECONDARY_CHANNEL_ID = int(os.getenv('WINAMAX_SECONDARY_CHANNEL_ID'))
 
-            for boost in finalBoosts:
-                try:
-                    with open(f'{cache_path}/winamax/cache.json', 'r') as file:
-                        cache = json.load(file)
-                except FileNotFoundError:
-                    cache = []
+            try:
+                with open(f'{cache_path}/winamax/cache.json', 'r') as file:
+                    date = datetime.now().isoformat()
+                    cache = json.load(file)
 
+                    for boost in cache:
+                        if datetime.fromisoformat(date) > datetime.fromisoformat(boost['startTime']):
+                            channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
+                            message = await channel.fetch_message(boost['message_id'])
+                            await message.delete()
+                            cache.remove(boost)
+                    
+            except FileNotFoundError:
+                cache = []
+
+            for boost in finalBoosts:
                 embed = discord.Embed(
                     title=boost['title'],
                     description=boost['intitule'],
@@ -88,6 +100,7 @@ async def winamax(bot, cache_path):
                 embed.add_field(name='Mise max', value=boost['maxBet'], inline=True)
 
                 boostCache = next((boostCache for boostCache in cache if boost["title"] == boostCache["title"] and boost["intitule"] == boostCache["intitule"]), None)
+                
                 if not boostCache:
                     if boost['bigBoost']:
                         channel = bot.get_channel(MAIN_CHANNEL_ID)
@@ -98,6 +111,7 @@ async def winamax(bot, cache_path):
                         message = await channel.send(embed=embed)
 
                         boost['message_id'] = message.id
+                        cache.append(boost)
                     else:
                         logging.warning(f"Channel not found: {MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID}")
                 else:
@@ -114,10 +128,8 @@ async def winamax(bot, cache_path):
 
                         await thread.send('Le boost a été modifié !', embed=embed)
 
-
-            
             with open(f'{cache_path}/winamax/cache.json', 'w') as file:
-                json.dump(finalBoosts, file, indent=4)
+                json.dump(cache, file, indent=4)
 
         else:
             logging.warning("PRELOADED_STATE not found in the response.")

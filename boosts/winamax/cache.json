@@ -1,1 +1,50 @@
-[]
+[
+    {
+        "intitule": "Chennedy Carter marque au moins 25 points",
+        "boostedOdd": 3.2,
+        "odd": 2.8,
+        "title": "New York Liberty - Chicago Sky",
+        "bigBoost": false,
+        "maxBet": "50",
+        "sport": "football",
+        "betAnalytixBetName": "New York Liberty - Chicago Sky / Chennedy Carter marque au moins 25 points",
+        "startTime": "2024-07-12T01:00:00",
+        "message_id": 1261031251691962380
+    },
+    {
+        "intitule": "Plus de 1,5 buts dans chacun des 5 matchs du jour",
+        "boostedOdd": 5,
+        "odd": 3.87,
+        "title": "Serie A - Br\u00e9sil",
+        "bigBoost": false,
+        "maxBet": "50",
+        "sport": "football",
+        "betAnalytixBetName": "Serie A - Br\u00e9sil / Plus de 1,5 buts dans chacun des 5 matchs du jour",
+        "startTime": "2024-07-12T00:30:00",
+        "message_id": 1261031252551532557
+    },
+    {
+        "intitule": "Flamengo marque dans les deux mi-temps",
+        "boostedOdd": 2.7,
+        "odd": 2.4,
+        "title": "Flamengo - Fortaleza",
+        "bigBoost": false,
+        "maxBet": "50",
+        "sport": "football",
+        "betAnalytixBetName": "Flamengo - Fortaleza / Flamengo marque dans les deux mi-temps",
+        "startTime": "2024-07-12T01:00:00",
+        "message_id": 1261031253608628235
+    },
+    {
+        "intitule": "Plus de 8,5 points lors du match",
+        "boostedOdd": 2,
+        "odd": 1.82,
+        "title": "Tampa Bay Rays - New York Yankees",
+        "bigBoost": false,
+        "maxBet": "50",
+        "sport": "football",
+        "betAnalytixBetName": "Tampa Bay Rays - New York Yankees / Plus de 8,5 points lors du match",
+        "startTime": "2024-07-12T00:50:00",
+        "message_id": 1261031653602623498
+    }
+]
