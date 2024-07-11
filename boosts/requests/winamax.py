@@ -6,7 +6,7 @@ import json
 import os
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, filename='./boosts/logs/winamax.log', format='%(asctime)s %(levelname)s:%(message)s')
+logging.basicConfig(level=logging.INFO, filename='logs/boosts/winamax.log', format='%(asctime)s %(levelname)s:%(message)s')
 
 async def winamax(bot, cache_path):
     url = 'https://www.winamax.fr/paris-sportifs/sports/100000'
