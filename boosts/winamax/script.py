@@ -133,8 +133,8 @@ async def winamax(bot, cache_path):
 
                         channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
                         message = await channel.fetch_message(boostCache['message_id'])
-                        print(boostCache['message_id'])
-                        print(message, message.thread)
+                        # print(boostCache['message_id'])
+                        # print(message, message.thread)
 
                         if hasattr(message, 'thread') and message.thread == None:
                             thread = await message.create_thread(name=f'Thread de discussion sur le boost', auto_archive_duration=60)
