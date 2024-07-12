@@ -76,6 +76,7 @@ async def winamax(bot, cache_path):
             try:
                 with open(f'{cache_path}/winamax/cache.json', 'r') as file:
                     date = datetime.now().isoformat()
+                    print(date)
                     cache = json.load(file)
 
                     for boost in cache:
