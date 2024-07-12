@@ -100,6 +100,7 @@ async def winamax(bot, cache_path):
                 embed.add_field(name='Côte initiale', value=boost['odd'], inline=True)
                 embed.add_field(name='Côte boostée', value=boost['boostedOdd'], inline=True)
                 embed.add_field(name='Mise max', value=boost['maxBet'], inline=True)
+                embed.set_footer(text=datetime.now().strftime('%d/%m/%Y %H:%M:%S'))
 
                 boostCache = next((boostCache for boostCache in cache if boost["intitule"] == boostCache["intitule"]), None)
                 
