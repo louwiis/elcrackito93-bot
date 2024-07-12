@@ -35,40 +35,40 @@ async def winamax(bot, cache_path):
         # Extract PRELOAD_STATE from the response text
         preloaded_state_match = re.search(r'PRELOADED_STATE\s*=\s*({.*?});', response.text)
         if preloaded_state_match:
-            # preloaded_state = preloaded_state_match.group(1)
-            # data = json.loads(preloaded_state)
+            preloaded_state = preloaded_state_match.group(1)
+            data = json.loads(preloaded_state)
 
-            # matches = data['matches'];
-            # boosts = data['bets'];
-            # outcomes = data['outcomes'];
-            # odds = data['odds'];
+            matches = data['matches'];
+            boosts = data['bets'];
+            outcomes = data['outcomes'];
+            odds = data['odds'];
 
-            # finalBoosts = []
+            finalBoosts = []
 
-            # boosts = [boost for boost in boosts.values() if 'previousOdd' in boost]
+            boosts = [boost for boost in boosts.values() if 'previousOdd' in boost]
 
-            # for boost in boosts:
-            #     betId = boost['betId']
-            #     outcomeId = boost['outcomes'][0]
+            for boost in boosts:
+                betId = boost['betId']
+                outcomeId = boost['outcomes'][0]
 
-            #     match = [match for match in matches.values() if match['mainBetId'] == betId][0]
+                match = [match for match in matches.values() if match['mainBetId'] == betId][0]
 
-            #     boost['intitule'] = outcomes[f'{outcomeId}']['label']
-            #     boost['odd'] = odds[f'{outcomeId}']
-            #     boost['title'] = match['title'].split(':', 1)[1].strip()
-            #     boost['startTime'] = datetime.fromtimestamp(match['matchStart'])
+                boost['intitule'] = outcomes[f'{outcomeId}']['label']
+                boost['odd'] = odds[f'{outcomeId}']
+                boost['title'] = match['title'].split(':', 1)[1].strip()
+                boost['startTime'] = datetime.fromtimestamp(match['matchStart'])
 
-            #     finalBoosts.append({
-            #         'intitule': boost['intitule'],
-            #         'boostedOdd': boost['odd'] if 'odd' in boost else 'N/A',
-            #         'odd': boost['previousOdd'] if 'previousOdd' in boost else 'N/A',
-            #         'title': boost['title'],
-            #         'bigBoost': boost['marketId'] != 9038,
-            #         'maxBet': boost['betTypeName'].lower().split('mise max ')[1].split(' €')[0],
-            #         'sport': 'football',
-            #         'betAnalytixBetName': f"{boost['title']} / {boost['intitule']}",
-            #         'startTime': boost['startTime'].isoformat(),
-            #     })
+                finalBoosts.append({
+                    'intitule': boost['intitule'],
+                    'boostedOdd': boost['odd'] if 'odd' in boost else 'N/A',
+                    'odd': boost['previousOdd'] if 'previousOdd' in boost else 'N/A',
+                    'title': boost['title'],
+                    'bigBoost': boost['marketId'] != 9038,
+                    'maxBet': boost['betTypeName'].lower().split('mise max ')[1].split(' €')[0],
+                    'sport': 'football',
+                    'betAnalytixBetName': f"{boost['title']} / {boost['intitule']}",
+                    'startTime': boost['startTime'].isoformat(),
+                })
 
             MAIN_CHANNEL_ID = int(os.getenv('WINAMAX_MAIN_CHANNEL_ID'))
             SECONDARY_CHANNEL_ID = int(os.getenv('WINAMAX_SECONDARY_CHANNEL_ID'))
