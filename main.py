@@ -28,8 +28,13 @@ SERVER_ID = os.getenv('SERVER_ID')
 @bot.event
 async def on_message(message):
     # Check if the message content matches the "started a thread" message format
+    print(message.type)
     if message.type == discord.MessageType.thread_created:
-        await message.delete()
+        try:
+            await message.delete()
+        except:
+            print('Error deleting message')
+            pass
 
 # every 10 seconds
 @tasks.loop(seconds=15)
