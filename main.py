@@ -10,7 +10,6 @@ load_dotenv()
 
 from boosts.utils import search_boosts
 
-
 intents = discord.Intents.default()
 bot = discord.Client(intents=intents)
 tree = app_commands.CommandTree(bot)
@@ -27,8 +26,6 @@ SERVER_ID = os.getenv('SERVER_ID')
 
 @bot.event
 async def on_message(message):
-    # Check if the message content matches the "started a thread" message format
-    print(message.type)
     if message.type == discord.MessageType.thread_created:
         try:
             await message.delete()
@@ -36,7 +33,6 @@ async def on_message(message):
             print('Error deleting message')
             pass
 
-# every 10 seconds
 @tasks.loop(seconds=15)
 async def boosts():
     await search_boosts(bot)

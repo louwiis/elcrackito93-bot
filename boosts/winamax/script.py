@@ -6,7 +6,6 @@ import json
 import os
 from datetime import datetime, timedelta
 
-# Configure logging
 logging.basicConfig(level=logging.INFO, filename='./boosts/winamax/log.log', format='%(asctime)s %(levelname)s:%(message)s')
 
 async def winamax(bot, cache_path):
@@ -28,11 +27,9 @@ async def winamax(bot, cache_path):
     }
 
     try:
-        # so there is a 
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
+        response.raise_for_status()
 
-        # Extract PRELOAD_STATE from the response text
         preloaded_state_match = re.search(r'PRELOADED_STATE\s*=\s*({.*?});', response.text)
         if preloaded_state_match:
             preloaded_state = preloaded_state_match.group(1)
@@ -88,9 +85,6 @@ async def winamax(bot, cache_path):
 
                     for boost in cache:
                         if datetime.fromisoformat(date) > datetime.fromisoformat(boost['startTime']):
-                            channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
-                            message = await channel.fetch_message(boost['message_id'])
-                            await message.delete()
                             cache.remove(boost)
                     
             except FileNotFoundError:
