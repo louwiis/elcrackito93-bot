@@ -133,6 +133,7 @@ async def winamax(bot, cache_path):
 
                         channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
                         message = await channel.fetch_message(boostCache['message_id'])
+                        print(boostCache['message_id'])
                         print(message, message.thread)
 
                         if not message.thread:
