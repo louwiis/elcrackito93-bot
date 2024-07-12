@@ -76,11 +76,9 @@ async def winamax(bot, cache_path):
             try:
                 with open(f'{cache_path}/winamax/cache.json', 'r') as file:
                     date = datetime.now().isoformat()
-                    print(date)
                     cache = json.load(file)
 
                     for boost in cache:
-                        print(boost['startTime'])
                         if datetime.fromisoformat(date) > datetime.fromisoformat(boost['startTime']):
                             channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
                             message = await channel.fetch_message(boost['message_id'])
