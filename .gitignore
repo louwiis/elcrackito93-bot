@@ -2,5 +2,4 @@
 .venv
 
 *.log
-
-boosts/cache.json
+*.json
