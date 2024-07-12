@@ -136,7 +136,7 @@ async def winamax(bot, cache_path):
                         print(boostCache['message_id'])
                         print(message, message.thread)
 
-                        if not message.thread:
+                        if hasattr(message, 'thread') and message.thread == None:
                             thread = await message.create_thread(name=f'Thread de discussion sur le boost', auto_archive_duration=60)
                         else: 
                             thread = message.thread
