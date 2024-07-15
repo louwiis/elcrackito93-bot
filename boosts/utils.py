@@ -81,7 +81,6 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
     try:
         with open(cache_file_path, 'w') as file:
-            print(f"Writing cache to file: {cache_file_path}")
             json.dump(cache, file, indent=4)
     except Exception as e:
         print(f"Error writing to cache file: {e}")
