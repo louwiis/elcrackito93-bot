@@ -10,7 +10,7 @@ from boosts.unibet.script import unibet
 cache_path = 'boosts'
 
 async def search_boosts(bot):
-    # await winamax(bot)
+    await winamax(bot)
     await unibet(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
