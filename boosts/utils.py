@@ -33,7 +33,6 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         cache = []
 
     for boost in finalBoosts:
-        print(f"Processing boost: {boost['intitule']}")
         embed = discord.Embed(
             title=boost['title'],
             description=boost['intitule'],
