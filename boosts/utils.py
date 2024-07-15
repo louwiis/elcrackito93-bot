@@ -2,7 +2,8 @@ import discord
 import logging
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
+import pytz
 from boosts.winamax.script import winamax
 from boosts.unibet.script import unibet
 
@@ -41,10 +42,13 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
         embed.add_field(name='Côte initiale', value=boost['odd'], inline=True)
         embed.add_field(name='Côte boostée', value=boost['boostedOdd'], inline=True)
-        embed.add_field(name='Mise max', value=f"{boost['maxBet']} €", inline=True)
-        # set the zone to Paris on the datetime object to get the correct timezone
-        # embed.set_footer(text=datetime.now().astimezone().strftime('%d/%m/%Y %H:%M:%S'))
-        embed.set_footer(text=datetime.now().astimezone(timezone.utc).strftime('%d/%m/%Y %H:%M:%S'))
+        embed.add_field(name='Mise max', value=f"{boost['maxBet']} €", inline=True)    
+
+        utc_time = datetime.now(pytz.utc)
+        french_time = utc_time.astimezone(pytz.timezone('Europe/Paris'))
+        formatted_time = french_time.strftime('%d/%m/%Y %H:%M:%S')
+
+        embed.set_footer(text=formatted_time)
 
         boostCache = next((boostCache for boostCache in cache if boost["intitule"] == boostCache["intitule"]), None)
         
