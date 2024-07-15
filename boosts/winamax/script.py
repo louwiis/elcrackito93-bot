@@ -119,6 +119,7 @@ async def winamax(bot, cache_path):
                         logging.warning(f"Channel not found: {MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID}")
                 else:
                     boost['message_id'] = boostCache['message_id']
+                    boostCache['startTime'] = boost['startTime']
 
                     list = [
                         'odd',
@@ -133,8 +134,6 @@ async def winamax(bot, cache_path):
 
                         channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
                         message = await channel.fetch_message(boostCache['message_id'])
-                        # print(boostCache['message_id'])
-                        # print(message, message.thread)
 
                         if hasattr(message, 'thread') and message.thread == None:
                             thread = await message.create_thread(name=f'Thread de discussion sur le boost', auto_archive_duration=60)
@@ -142,9 +141,6 @@ async def winamax(bot, cache_path):
                             thread = message.thread
 
                         await thread.send('Le boost a été modifié !', embed=embed)
-                    elif not boost['startTime'] == boostCache['startTime']:
-                        cache.remove(boostCache)
-                        cache.append(boost)
 
             with open(f'{cache_path}/winamax/cache.json', 'w') as file:
                 json.dump(cache, file, indent=4)
