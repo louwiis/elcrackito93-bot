@@ -99,7 +99,7 @@ async def winamax(bot, cache_path):
 
                 embed.add_field(name='Côte initiale', value=boost['odd'], inline=True)
                 embed.add_field(name='Côte boostée', value=boost['boostedOdd'], inline=True)
-                embed.add_field(name='Mise max', value=boost['maxBet'], inline=True)
+                embed.add_field(name='Mise max', value=boost['maxBet'] + ' €', inline=True)
                 embed.set_footer(text=datetime.now().strftime('%d/%m/%Y %H:%M:%S'))
 
                 boostCache = next((boostCache for boostCache in cache if boost["intitule"] == boostCache["intitule"]), None)
@@ -142,6 +142,9 @@ async def winamax(bot, cache_path):
                             thread = message.thread
 
                         await thread.send('Le boost a été modifié !', embed=embed)
+                    elif not boost['startTime'] == boostCache['startTime']:
+                        cache.remove(boostCache)
+                        cache.append(boost)
 
             with open(f'{cache_path}/winamax/cache.json', 'w') as file:
                 json.dump(cache, file, indent=4)

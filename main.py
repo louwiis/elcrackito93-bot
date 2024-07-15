@@ -10,6 +10,8 @@ load_dotenv()
 
 from boosts.utils import search_boosts
 
+print(discord.__version__)
+
 intents = discord.Intents.default()
 bot = discord.Client(intents=intents)
 tree = app_commands.CommandTree(bot)
