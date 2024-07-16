@@ -22,9 +22,13 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     
     cache_file_path = os.path.join(os.getcwd(), cache_path, bookmaker, 'cache.json')
 
+    utc_time = datetime.now(pytz.utc)
+    french_time = utc_time.astimezone(pytz.timezone('Europe/Paris'))
+    
     try:
         with open(cache_file_path, 'r') as file:
-            date = (datetime.now() - timedelta(hours=1)).isoformat()
+            date = french_time.strftime('%Y-%m-%d %H:%M:%S')
+            print(date)
             cache = json.load(file)
 
             # Remove outdated boosts
@@ -46,8 +50,6 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         embed.add_field(name='Côte boostée', value=boost['boostedOdd'], inline=True)
         embed.add_field(name='Mise max', value=f"{boost['maxBet']} €", inline=True)    
 
-        utc_time = datetime.now(pytz.utc)
-        french_time = utc_time.astimezone(pytz.timezone('Europe/Paris'))
         formatted_time = french_time.strftime('%d/%m/%Y %H:%M:%S')
 
         embed.set_footer(text=formatted_time)
