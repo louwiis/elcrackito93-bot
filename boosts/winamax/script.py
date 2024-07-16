@@ -1,9 +1,7 @@
-import discord
 import requests
 import re
 import logging
 import json
-import os
 from datetime import datetime, timedelta
 
 logging.basicConfig(level=logging.INFO, filename='./boosts/winamax/log.log', format='%(asctime)s %(levelname)s:%(message)s')
@@ -66,7 +64,7 @@ async def winamax(bot):
                     'maxBet': boost['betTypeName'].lower().split('mise max ')[1].split(' €')[0],
                     'sport': 'football',
                     'betAnalytixBetName': f"{boost['title']} / {boost['intitule']}",
-                    'startTime': (boost['startTime'] + timedelta(hours=1)).isoformat(),
+                    'startTime': boost['startTime'].isoformat(),
                 })
             
             await publish_boosts('winamax', bot, finalBoosts, '0xff0000')

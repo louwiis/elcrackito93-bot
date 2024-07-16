@@ -4,14 +4,17 @@ import json
 import os
 from datetime import datetime, timedelta
 import pytz
+
 from boosts.winamax.script import winamax
 from boosts.unibet.script import unibet
+from boosts.psel.script import psel
 
 cache_path = 'boosts'
 
 async def search_boosts(bot):
     await winamax(bot)
     await unibet(bot)
+    await psel(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
@@ -21,7 +24,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
     try:
         with open(cache_file_path, 'r') as file:
-            date = datetime.now().isoformat()
+            date = (datetime.now() - timedelta(hours=1)).isoformat()
             cache = json.load(file)
 
             # Remove outdated boosts

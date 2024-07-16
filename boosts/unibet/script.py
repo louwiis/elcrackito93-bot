@@ -1,9 +1,4 @@
-import discord
-import requests
-import re
 import logging
-import json
-import os
 import aiohttp
 from datetime import datetime, timedelta
 
@@ -83,7 +78,7 @@ async def unibet(bot):
                                         'maxBet': 50,
                                         'sport': event['cmsSportName'],
                                         'betAnalytixBetName': f"{market['eventName']} / {selection['name']}",
-                                        'startTime': (datetime.fromtimestamp(event['eventStartDate'] / 1000) + timedelta(hours=1)).isoformat(),
+                                        'startTime': datetime.fromtimestamp(event['eventStartDate'] / 1000).isoformat(),
                                     })
                 else:
                     print(f"Request failed with status: {response.status}")
