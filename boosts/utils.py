@@ -13,7 +13,7 @@ cache_path = 'boosts'
 
 async def search_boosts(bot):
     await winamax(bot)
-    # await unibet(bot)
+    await unibet(bot)
     await psel(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
@@ -28,7 +28,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     
     try:
         with open(cache_file_path, 'r') as file:
-            cache = [boost for boost in json.load(file) if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) > utc_time]
+            cache = [boost for boost in json.load(file) if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) > utc_time - timedelta(hours=1)]
 
     except FileNotFoundError:
         cache = []
