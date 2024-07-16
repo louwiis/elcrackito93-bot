@@ -80,6 +80,6 @@ def convert_to_iso(input_str):
         
         dt = datetime.strptime(f"{year} {month} {day} {hour} {minute}", "%Y %m %d %H %M")
         
-        return (dt + timedelta(hours=2)).isoformat()
+        return (dt).isoformat()
     else:
         return None

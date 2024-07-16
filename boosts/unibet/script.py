@@ -1,6 +1,7 @@
 import logging
 import aiohttp
 from datetime import datetime, timedelta
+import pytz
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, filename='./boosts/unibet/log.log', format='%(asctime)s %(levelname)s:%(message)s')
@@ -50,7 +51,7 @@ async def unibet(bot):
                                 'maxBet': 10,
                                 'sport': 'football',
                                 'betAnalytixBetName': f"{item['shortTitle']} / {bet['name']}",
-                                'startTime': datetime.fromtimestamp(item['eventStartDate'] / 1000)
+                                'startTime': datetime.fromtimestamp(item['eventStartDate'] / 1000).astimezone(pytz.timezone('Europe/Paris'))
                             })
                 else:
                     print(f"Request failed with status: {response.status}")
@@ -78,7 +79,7 @@ async def unibet(bot):
                                         'maxBet': 50,
                                         'sport': event['cmsSportName'],
                                         'betAnalytixBetName': f"{market['eventName']} / {selection['name']}",
-                                        'startTime': datetime.fromtimestamp(event['eventStartDate'] / 1000).isoformat(),
+                                        'startTime': datetime.fromtimestamp(item['eventStartDate'] / 1000).astimezone(pytz.utc).isoformat()
                                     })
                 else:
                     print(f"Request failed with status: {response.status}")

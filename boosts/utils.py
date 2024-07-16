@@ -13,7 +13,7 @@ cache_path = 'boosts'
 
 async def search_boosts(bot):
     await winamax(bot)
-    await unibet(bot)
+    # await unibet(bot)
     await psel(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
@@ -24,17 +24,15 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
     utc_time = datetime.now(pytz.utc)
     french_time = utc_time.astimezone(pytz.timezone('Europe/Paris'))
+    formatted_time = french_time.strftime('%d/%m/%Y %H:%M:%S')
     
     try:
         with open(cache_file_path, 'r') as file:
-            date = french_time.strftime('%Y-%m-%d %H:%M:%S')
-            print(date)
-            cache = json.load(file)
+            cache = [boost for boost in json.load(file) if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) > utc_time]
 
-            # Remove outdated boosts
-            cache = [boost for boost in cache if datetime.fromisoformat(date) <= datetime.fromisoformat(boost['startTime'])]        
     except FileNotFoundError:
         cache = []
+
     except Exception as e:
         print(f"Error reading cache file: {e}")
         cache = []

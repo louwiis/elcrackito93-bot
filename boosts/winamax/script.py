@@ -3,6 +3,7 @@ import re
 import logging
 import json
 from datetime import datetime, timedelta
+import pytz
 
 logging.basicConfig(level=logging.INFO, filename='./boosts/winamax/log.log', format='%(asctime)s %(levelname)s:%(message)s')
 
@@ -54,7 +55,7 @@ async def winamax(bot):
                 boost['odd'] = odds[f'{outcomeId}']
                 boost['title'] = match['title'].split(':', 1)[1].strip()
                 boost['startTime'] = datetime.fromtimestamp(match['matchStart'])
-
+                
                 finalBoosts.append({
                     'intitule': boost['intitule'],
                     'boostedOdd': boost['odd'] if 'odd' in boost else 'N/A',
@@ -64,7 +65,7 @@ async def winamax(bot):
                     'maxBet': boost['betTypeName'].lower().split('mise max ')[1].split(' €')[0],
                     'sport': 'football',
                     'betAnalytixBetName': f"{boost['title']} / {boost['intitule']}",
-                    'startTime': boost['startTime'].isoformat(),
+                    'startTime': boost['startTime'].astimezone(pytz.utc).isoformat()
                 })
             
             await publish_boosts('winamax', bot, finalBoosts, '0xff0000')
