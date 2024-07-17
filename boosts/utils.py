@@ -28,7 +28,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     
     try:
         with open(cache_file_path, 'r') as file:
-            cache = [boost for boost in json.load(file) if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) > utc_time - timedelta(hours=1)]
+            cache = [boost for boost in json.load(file) if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) > utc_time - timedelta(hours=12)]
 
     except FileNotFoundError:
         cache = []
@@ -52,7 +52,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
         embed.set_footer(text=formatted_time)
 
-        boostCache = next((boostCache for boostCache in cache if boost["intitule"] == boostCache["intitule"]), None)
+        boostCache = next((boostCache for boostCache in cache if boost["intitule"] == boostCache["intitule"] and boost["title"] == boostCache["title"]), None)
         
         if not boostCache:
             channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
