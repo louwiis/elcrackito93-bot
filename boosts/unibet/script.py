@@ -71,6 +71,7 @@ async def unibet(bot):
                                     boostedOdd = (100 + float(selection['currentPriceUp']) * (100 / float(selection['currentPriceDown']))) / 100
 
                                     finalBoosts.append({
+                                        'betId': selection["selectionId"],
                                         'title': market['eventName'],
                                         'intitule': selection['name'],
                                         'bigBoost': False,

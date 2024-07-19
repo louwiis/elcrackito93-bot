@@ -52,7 +52,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
         embed.set_footer(text=formatted_time)
 
-        boostCache = next((boostCache for boostCache in cache if boost["intitule"] == boostCache["intitule"] and boost["title"] == boostCache["title"]), None)
+        boostCache = next((boostCache for boostCache in cache if boost["betId"] == boostCache["betId"]), None)
         
         if not boostCache:
             channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)

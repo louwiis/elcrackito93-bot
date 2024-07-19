@@ -57,6 +57,7 @@ async def winamax(bot):
                 boost['startTime'] = datetime.fromtimestamp(match['matchStart'])
                 
                 finalBoosts.append({
+                    'betId': boost['betId'],
                     'intitule': boost['intitule'],
                     'boostedOdd': boost['odd'] if 'odd' in boost else 'N/A',
                     'odd': boost['previousOdd'] if 'previousOdd' in boost else 'N/A',
