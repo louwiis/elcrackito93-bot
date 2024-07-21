@@ -58,7 +58,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
 
             if channel:
-                message = await channel.send(embed=embed)
+                message = await channel.send('@everyone', embed=embed)
                 boost['message_id'] = message.id
                 cache.append(boost)
             else:
@@ -81,7 +81,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 else:
                     thread = message.thread
 
-                await thread.send('Le boost a été modifié !', embed=embed)
+                await thread.send('@everyone Le boost a été modifié !', embed=embed)
 
     try:
         with open(cache_file_path, 'w') as file:
