@@ -58,7 +58,8 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
 
             if channel:
-                message = await channel.send('@everyone', embed=embed)
+                message = await channel.send(f'{boost["intitule"]}\n\n@everyone', embed=embed)
+                await message.edit(content='', embed=embed)
                 boost['message_id'] = message.id
                 cache.append(boost)
             else:
