@@ -46,7 +46,7 @@ async def psel(bot):
                                     maxBet = boost['desc'].lower().split('mise max ')[1].split('€')[0].strip()                                      
 
                                     finalBoosts.append({
-                                        'betId': f'{match["desc"]}-{boost["desc"].split(" (")[0].strip()} / {boostedBet["desc"]}',
+                                        'betId': id,
                                         'title': match['desc'],
                                         'intitule': boost['desc'].split(' (')[0].strip() + ' / ' + boostedBet['desc'],
                                         'boostedOdd': boostedBet['price'],

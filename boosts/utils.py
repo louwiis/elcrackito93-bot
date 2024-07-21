@@ -67,15 +67,16 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             boost['message_id'] = boostCache['message_id']
             boostCache['startTime'] = boost['startTime']
 
-            update_fields = ['odd', 'boostedOdd', 'maxBet', 'title']
-            if any(boost[el] != boostCache[el] for el in update_fields):
+            # update_fields = ['odd', 'boostedOdd', 'maxBet', 'title']
+            # if any(boost[el] != boostCache[el] for el in update_fields):
+            if boost != boostCache:
                 cache.remove(boostCache)
                 cache.append(boost)
 
                 channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
                 message = await channel.fetch_message(boostCache['message_id'])
 
-                if hasattr(message, 'thread') and message.thread is None:
+                if message.thread is None:
                     thread = await message.create_thread(name='Thread de discussion sur le boost', auto_archive_duration=60)
                 else:
                     thread = message.thread
