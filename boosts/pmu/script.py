@@ -72,7 +72,7 @@ async def pmu(bot):
                 else:
                     print(f"Request failed with status: {response.status}")
 
-        await publish_boosts('pmu', bot, finalBoosts, '0x0000ff')
+        await publish_boosts('pmu', bot, finalBoosts, '0xffA500')
 
     except Exception as e:
         logging.error(f"Error fetching Unibet boosts: {e}")
