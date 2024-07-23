@@ -5,16 +5,18 @@ import os
 from datetime import datetime, timedelta
 import pytz
 
-from boosts.winamax.script import winamax
-from boosts.unibet.script import unibet
-from boosts.psel.script import psel
+# from boosts.winamax.script import winamax
+# from boosts.unibet.script import unibet
+# from boosts.psel.script import psel
+from boosts.pmu.script import pmu
 
 cache_path = 'boosts'
 
 async def search_boosts(bot):
-    await winamax(bot)
-    await unibet(bot)
-    await psel(bot)
+    # await winamax(bot)
+    # await unibet(bot)
+    # await psel(bot)
+    await pmu(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
