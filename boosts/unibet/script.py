@@ -29,32 +29,32 @@ async def unibet(bot):
 
         async with aiohttp.ClientSession() as session:
             # flash boosts
-            # url = "https://www.unibet.fr/zones/mainheadlines.json?pageId=200"
-            # async with session.get(url, headers=headers) as response:
-            #     if response.status == 200:
-            #         response = await response.json()
+            url = "https://www.unibet.fr/zones/mainheadlines.json?pageId=200"
+            async with session.get(url, headers=headers) as response:
+                if response.status == 200:
+                    response = await response.json()
 
-            #         for item in response['mainheadlines_first']:
-            #             bet = item['market']['selections'][0]
+                    for item in response['mainheadlines_first']:
+                        bet = item['market']['selections'][0]
 
-            #             if bet['flashBet'] == True:
-            #                 bet = item['market']['selections'][0]
-            #                 boostedOdd = (100 + float(bet['currentPriceUp']) * (100 / float(bet['currentPriceDown']))) / 100
+                        if bet['flashBet'] == True:
+                            bet = item['market']['selections'][0]
+                            boostedOdd = (100 + float(bet['currentPriceUp']) * (100 / float(bet['currentPriceDown']))) / 100
 
-            #                 finalBoosts.append({
-            #                     'intitule': bet['name'],
-            #                     'title': f"{item['marketName']} - {item['shortTitle']}",
-            #                     'description': bet['name'],
-            #                     'bigBoost': True,
-            #                     'odd': bet['originalOdd'],
-            #                     'boostedOdd': boostedOdd,
-            #                     'maxBet': 10,
-            #                     'sport': 'football',
-            #                     'betAnalytixBetName': f"{item['shortTitle']} / {bet['name']}",
-            #                     'startTime': datetime.fromtimestamp(item['eventStartDate'] / 1000).astimezone(pytz.timezone('Europe/Paris'))
-            #                 })
-            #     else:
-            #         print(f"Request failed with status: {response.status}")
+                            finalBoosts.append({
+                                'intitule': bet['name'],
+                                'title': f"{item['marketName']} - {item['shortTitle']}",
+                                'description': bet['name'],
+                                'bigBoost': True,
+                                'odd': bet['originalOdd'],
+                                'boostedOdd': boostedOdd,
+                                'maxBet': 10,
+                                'sport': 'football',
+                                'betAnalytixBetName': f"{item['shortTitle']} / {bet['name']}",
+                                'startTime': datetime.fromtimestamp(item['eventStartDate'] / 1000).astimezone(pytz.timezone('Europe/Paris'))
+                            })
+                else:
+                    print(f"Request failed with status: {response.status}")
 
             # classic boosts
             url = "https://www.unibet.fr/zones/v3/sportnode/markets.json?nodeId=703695152&filter=Super%2520Cote%2520Boost%25C3%25A9e&marketname=Super%2520Cote%2520Boost%25C3%25A9e%2520(50%25E2%2582%25AC%2520max)"
