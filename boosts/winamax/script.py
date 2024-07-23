@@ -36,10 +36,10 @@ async def winamax(bot):
             preloaded_state = preloaded_state_match.group(1)
             data = json.loads(preloaded_state)
 
-            matches = data['matches'];
-            boosts = data['bets'];
-            outcomes = data['outcomes'];
-            odds = data['odds'];
+            matches = data['matches'] or {}
+            boosts = data['bets'] or {}
+            outcomes = data['outcomes'] or {}
+            odds = data['odds'] or {}
 
             finalBoosts = []
 
