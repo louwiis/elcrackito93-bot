@@ -13,7 +13,7 @@ async def pmu(bot):
     try:
         finalBoosts = []
         sports = [];
-        url = f'https://sports.pmu.fr/sportsbook/rest/v2/matches/?marketGroup=boost&featureType=boost&ln=fr'
+        url = 'https://sports.pmu.fr/sportsbook/rest/v2/matches/?marketGroup=boost&featureType=boost&ln=fr'
         headers = {
             # "accept": "application/json, text/plain, */*",
             # "accept-language": "en,en-GB;q=0.9,en-US;q=0.8,fr;q=0.7",
