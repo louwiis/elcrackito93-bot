@@ -61,7 +61,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 message = await channel.send(f'{boost["intitule"]}', embed=embed)
                 await message.edit(content='', embed=embed)
                 thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
-                await thread.send('<@&1265314857889300523> Thread du nouveau boost')
+                await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
                 boost['message_id'] = message.id
                 cache.append(boost)
             else:
@@ -70,8 +70,6 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             boost['message_id'] = boostCache['message_id']
             boostCache['startTime'] = boost['startTime']
 
-            # update_fields = ['odd', 'boostedOdd', 'maxBet', 'title']
-            # if any(boost[el] != boostCache[el] for el in update_fields):
             if boost != boostCache:
                 cache.remove(boostCache)
                 cache.append(boost)
@@ -79,12 +77,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
                 message = await channel.fetch_message(boostCache['message_id'])
 
-                if message.thread is None:
-                    thread = await message.create_thread(name=boost['intitule'], auto_archive_duration=60)
-                else:
-                    thread = message.thread
-
-                await thread.send('Le boost a été modifié :', embed=embed)
+                await message.thread.send('Le boost a été modifié :', embed=embed)
 
     try:
         with open(cache_file_path, 'w') as file:
