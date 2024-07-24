@@ -44,7 +44,6 @@ async def pmu(bot):
             
             editedUrl = f'https://sports.pmu.fr/sportsbook/rest/v2/matches/?{"&".join([f"sportId={sport}" for sport in sports])}&marketGroup=boost&featureType=boost&ln=fr'
 
-            print(editedUrl)
             # get boosts
             async with session.get(editedUrl) as response:
                 if response.status == 200:
