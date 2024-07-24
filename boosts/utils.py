@@ -74,7 +74,9 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             boost['message_id'] = boostCache['message_id']
             boostCache['startTime'] = boost['startTime']
 
-            if boost != boostCache:
+            update_fields = ['boostedOdd', 'maxBet', 'title', 'intitule']
+            # if boost != boostCache:
+            if any(boost[el] != boostCache[el] for el in update_fields):
                 cache.remove(boostCache)
                 cache.append(boost)
 
