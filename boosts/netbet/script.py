@@ -64,7 +64,7 @@ async def netbet(bot):
                                 for selection in selections:
                                     if selection['odds_display'] != '-' and selection['odds'] != 1:
                                         finalBoosts.append({
-                                            'betId': selection['id'],
+                                            'betId': event['id'],
                                             'intitule': event['label'],
                                             'boostedOdd': selection['odds'],
                                             'odd': '?',
