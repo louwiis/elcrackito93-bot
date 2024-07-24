@@ -9,14 +9,16 @@ from boosts.winamax.script import winamax
 from boosts.unibet.script import unibet
 from boosts.psel.script import psel
 from boosts.pmu.script import pmu
+from boosts.netbet.script import netbet
 
 cache_path = 'boosts'
 
 async def search_boosts(bot):
-    await winamax(bot)
-    await unibet(bot)
-    await psel(bot)
-    await pmu(bot)
+    # await winamax(bot)
+    # await unibet(bot)
+    # await psel(bot)
+    # await pmu(bot)
+    await netbet(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
