@@ -44,19 +44,28 @@ async def pmu(bot):
             
             editedUrl = f'https://sports.pmu.fr/sportsbook/rest/v2/matches/?{"&".join([f"sportId={sport}" for sport in sports])}&marketGroup=boost&featureType=boost&ln=fr'
 
+            print(editedUrl)
             # get boosts
             async with session.get(editedUrl) as response:
                 if response.status == 200:
                     response = await response.json()
 
-                    for league in response:
-                        title = league['name'].split(' - SuperCote')[0]
-                        maxBetSearch = re.search(r'(\d{1,3}€ max)', league['name'])
-                        maxBet = maxBetSearch.group(1).split('€')[0] if maxBetSearch else '?'
-                        league['endDate'] = datetime.strptime(league['endDate'], '%Y-%m-%dT%H:%M:%S.%f+0000').replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Europe/Paris')).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
+                    for event in response:
+                        title = event['name'].split(' - SuperCote')[0]
 
-                        for odd in league['odds'] if 'odds' in league else []:
+                        if event['eventType'] == 'Tournament':
+                            maxBetSearch = re.search(r'(\d{1,3}€ max)', event['name'])
+                            maxBet = maxBetSearch.group(1).split('€')[0] if maxBetSearch else '?'
+                            date = datetime.strptime(event['endDate'], '%Y-%m-%dT%H:%M:%S.%f+0000').replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Europe/Paris')).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
+                        else:
+                            date = datetime.strptime(event['startDate'], '%Y-%m-%dT%H:%M:%S.%f+0000').replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Europe/Paris')).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
+
+                        for odd in event['odds'] if 'odds' in event else []:
                             for boost in odd['outcomes']:
+                                if event['eventType'] == 'Match':
+                                    maxBetSearch = re.search(r'(\d{1,3}€ max)', boost['outcome'])
+                                    maxBet = maxBetSearch.group(1).split('€')[0] if maxBetSearch else '?'
+
                                 finalBoosts.append({
                                     'betId': boost['id'],
                                     'intitule': boost['outcome'],
@@ -67,7 +76,7 @@ async def pmu(bot):
                                     'maxBet': maxBet,
                                     'sport': 'football',
                                     'betAnalytixBetName': f"{title} / {boost['outcome']}",
-                                    'startTime': league['endDate']
+                                    'startTime': date
                                 })
                 else:
                     print(f"Request failed with status: {response.status}")
