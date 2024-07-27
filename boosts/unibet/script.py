@@ -51,7 +51,7 @@ async def unibet(bot):
                                 'maxBet': 10,
                                 'sport': 'football',
                                 'betAnalytixBetName': f"{item['shortTitle']} / {bet['name']}",
-                                'startTime': datetime.fromtimestamp(item['eventStartDate'] / 1000).astimezone(pytz.timezone('Europe/Paris'))
+                                'startTime': datetime.fromtimestamp(item['eventStartDate'] / 1000).astimezone(pytz.utc).isoformat()
                             })
                 else:
                     print(f"Request failed with status: {response.status}")
