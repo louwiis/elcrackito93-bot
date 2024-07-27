@@ -11,6 +11,8 @@ from boosts.psel.script import psel
 from boosts.pmu.script import pmu
 from boosts.netbet.script import netbet
 
+from twitter import tweet
+
 cache_path = 'boosts'
 
 async def search_boosts(bot):
@@ -68,6 +70,9 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
                 boost['message_id'] = message.id
                 cache.append(boost)
+
+                if MAIN_CHANNEL_ID == channel.id:
+                    await tweet(boost, bookmaker)
             else:
                 logging.warning(f"Channel not found: {MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID}")
         else:
