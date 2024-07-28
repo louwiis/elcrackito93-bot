@@ -60,9 +60,7 @@ async def unibet(bot):
             # classic boosts
             url = "https://www.unibet.fr/zones/v3/sportnode/markets.json?nodeId=703695152&filter=Super%2520Cote%2520Boost%25C3%25A9e&marketname=Super%2520Cote%2520Boost%25C3%25A9e%2520(50%25E2%2582%25AC%2520max)"
             async with session.get(url, headers=headers) as response:
-                print('test')
                 if response.status == 200:
-                    print('test')
                     response = await response.json()
 
                     days = response['marketsByType'][0]['days'] if 'marketsByType' in response and response['marketsByType'] else []
@@ -71,7 +69,6 @@ async def unibet(bot):
                         for event in day['events']:
                             for market in event['markets']:
                                 for selection in market['selections']:
-                                    print('test')
                                     boostedOdd = (100 + float(selection['currentPriceUp']) * (100 / float(selection['currentPriceDown']))) / 100
 
                                     finalBoosts.append({
@@ -87,21 +84,9 @@ async def unibet(bot):
                                         'startTime': datetime.fromtimestamp(event['eventStartDate'] / 1000).astimezone(pytz.utc).isoformat()
                                     })
 
-                                    print('betId', selection["selectionId"])
-                                    print('title', market['eventName'])
-                                    print('intitule', selection['name'])
-                                    print('bigBoost', False)
-                                    print('odd', selection['originalOdd'])
-                                    print('boostedOdd', boostedOdd)
-                                    print('maxBet', 50)
-                                    print('sport', event['cmsSportName'])
-                                    print('betAnalytixBetName', f"{market['eventName']} / {selection['name']}")
-                                    print('startTime', datetime.fromtimestamp(event['eventStartDate'] / 1000).astimezone(pytz.utc).isoformat())
-                                    
                 else:
                     print(f"Request failed with status: {response.status}")
       
-        print(finalBoosts)
         await publish_boosts('unibet', bot, finalBoosts, '0x00ff00')
 
     except Exception as e:
