@@ -16,13 +16,14 @@ from twitter import tweet
 cache_path = 'boosts'
 
 async def search_boosts(bot):
-    await winamax(bot)
+    # await winamax(bot)
     await unibet(bot)
-    await psel(bot)
-    await pmu(bot)
-    await netbet(bot)
+    # await psel(bot)
+    # await pmu(bot)
+    # await netbet(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
+    print(f"Publishing {len(finalBoosts)} boosts from {bookmaker}")
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
     SECONDARY_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
     
@@ -55,6 +56,8 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         embed.add_field(name='Mise max', value=f"{boost['maxBet']} €", inline=True)    
 
         formatted_time = french_time.strftime('%d/%m/%Y %H:%M:%S')
+
+        print(f"Boost: {boost['intitule']} - {boost['startTime']} - {formatted_time}")
 
         embed.set_footer(text=formatted_time)
 
