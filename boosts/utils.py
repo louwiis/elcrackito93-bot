@@ -18,10 +18,10 @@ cache_path = 'boosts'
 
 async def search_boosts(bot):
     await winamax(bot)
-    # await unibet(bot)
-    # await psel(bot)
-    # await pmu(bot)
-    # await netbet(bot)
+    await unibet(bot)
+    await psel(bot)
+    await pmu(bot)
+    await netbet(bot)
     await betclic(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
