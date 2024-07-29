@@ -48,7 +48,7 @@ async def psel(bot):
                                     finalBoosts.append({
                                         'betId': id,
                                         'title': match['desc'],
-                                        'intitule': boost['desc'].split(' (')[0].strip() + ' / ' + boostedBet['desc'],
+                                        'intitule': boost['desc'].split(' (')[0].strip() + ' / ' + boostedBet['desc'] + ' / ' + boost['period'],
                                         'boostedOdd': boostedBet['price'],
                                         'odd': odd,
                                         'bigBoost': maxBet == '10',
