@@ -32,7 +32,7 @@ async def tweet(boost, bookmaker_name):
             f"#TeamParieur #Boost #{bookmaker_name.capitalize()}"
         )
         print("Tweeting:", tweet_text)
-        # response = client.create_tweet(text=tweet_text)
-        # print("Tweet sent successfully!", response)
+        response = client.create_tweet(text=tweet_text)
+        print("Tweet sent successfully!", response)
     except Exception as e:
         print(e)
