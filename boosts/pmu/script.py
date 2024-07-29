@@ -1,5 +1,5 @@
 import logging
-import aiohttp # type: ignore
+import aiohttp
 from datetime import datetime, timedelta
 import re
 import pytz

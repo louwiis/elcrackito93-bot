@@ -10,6 +10,7 @@ from boosts.unibet.script import unibet
 from boosts.psel.script import psel
 from boosts.pmu.script import pmu
 from boosts.netbet.script import netbet
+from boosts.betclic.script import betclic
 
 from twitter import tweet
 
@@ -17,13 +18,13 @@ cache_path = 'boosts'
 
 async def search_boosts(bot):
     await winamax(bot)
-    await unibet(bot)
-    await psel(bot)
-    await pmu(bot)
-    await netbet(bot)
+    # await unibet(bot)
+    # await psel(bot)
+    # await pmu(bot)
+    # await netbet(bot)
+    await betclic(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
-    print(f"Publishing {len(finalBoosts)} boosts from {bookmaker}")
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
     SECONDARY_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
     
@@ -57,8 +58,6 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
         formatted_time = french_time.strftime('%d/%m/%Y %H:%M:%S')
 
-        print(f"Boost: {boost['intitule']} - {boost['startTime']} - {formatted_time}")
-
         embed.set_footer(text=formatted_time)
 
         boostCache = next((boostCache for boostCache in cache if boost["betId"] == boostCache["betId"]), None)
@@ -67,6 +66,8 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
 
             if channel:
+                print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
+
                 message = await channel.send(f'{boost["intitule"]}', embed=embed)
                 await message.edit(content='', embed=embed)
                 thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
