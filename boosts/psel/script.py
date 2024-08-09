@@ -2,9 +2,41 @@ import logging
 import aiohttp # type: ignore
 from datetime import datetime, timedelta
 import re
+import json
+import pytz
+
+cache_file_path = './boosts/psel/cache.json'
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, filename='./boosts/psel/log.log', format='%(asctime)s %(levelname)s:%(message)s')
+
+def get_boosts(response, finalBoosts):
+    if 'items' in response:
+        for id in response['items']:
+            if id.startswith('m'):
+                boost = response['items'][id]
+                match = response['items'][boost['parent']]
+                boostedBet = [odd for odd in response['items'].values() if odd['parent'] == id and 'flags' not in odd][0]
+
+                odd = boost['desc'].split('→')[0].split('(')[-1].split(' ')[0] if '→' in boost['desc'] else boost['desc'].split('->')[0].split('(')[-1].split(' ')[0]
+
+                if '€' in boost['desc'] and 'mise max' in boost['desc'].lower():
+                    maxBet = boost['desc'].lower().split('mise max ')[1].split('€')[0].strip()                                      
+
+                    print(f'intitule: {boost["desc"].split(" (")[0].strip()} / {boostedBet["desc"]} / {boost["period"]}')
+                    finalBoosts.append({
+                        'matchId': boost['parent'],
+                        'betId': id,
+                        'title': match['desc'],
+                        'intitule': boost['desc'].split(' (')[0].strip() + ' / ' + boostedBet['desc'] + ' / ' + boost['period'],
+                        'boostedOdd': boostedBet['price'],
+                        'odd': odd,
+                        'bigBoost': maxBet == '10',
+                        'maxBet': maxBet,
+                        'sport': match['path']['Sport'],
+                        'betAnalytixBetName': boost['desc'] + ' / ' + boostedBet['desc'],
+                        'startTime': convert_to_iso(match['start'])
+                    })
 
 async def psel(bot):
     from boosts.utils import publish_boosts
@@ -33,34 +65,43 @@ async def psel(bot):
                 if response.status == 200:
                     response = await response.json()
 
-                    if 'items' in response:
-                        for id in response['items']:
-                            if id.startswith('m'):
-                                boost = response['items'][id]
-                                match = response['items'][boost['parent']]
-                                boostedBet = [odd for odd in response['items'].values() if odd['parent'] == id and 'flags' not in odd][0]
-
-                                odd = boost['desc'].split('→')[0].split('(')[-1].split(' ')[0] if '→' in boost['desc'] else boost['desc'].split('->')[0].split('(')[-1].split(' ')[0]
-
-                                if '€' in boost['desc'] and 'mise max' in boost['desc'].lower():
-                                    maxBet = boost['desc'].lower().split('mise max ')[1].split('€')[0].strip()                                      
-
-                                    finalBoosts.append({
-                                        'betId': id,
-                                        'title': match['desc'],
-                                        'intitule': boost['desc'].split(' (')[0].strip() + ' / ' + boostedBet['desc'] + ' / ' + boost['period'],
-                                        'boostedOdd': boostedBet['price'],
-                                        'odd': odd,
-                                        'bigBoost': maxBet == '10',
-                                        'maxBet': maxBet,
-                                        'sport': match['path']['Sport'],
-                                        'betAnalytixBetName': boost['desc'] + ' / ' + boostedBet['desc'],
-                                        'startTime': convert_to_iso(match['start'])
-                                    })
+                    get_boosts(response, finalBoosts)
 
                 else:
                     print(f"Request failed with status: {response.status}")
 
+
+            utc_time = datetime.now(pytz.utc)
+
+            try:
+                with open(cache_file_path, 'r') as file:
+                    cache = [boost for boost in json.load(file) if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) > utc_time - timedelta(hours=12)]
+
+            except FileNotFoundError:
+                cache = []
+
+            except Exception as e:
+                print(f"Error reading cache file: {e}")
+                cache = []
+
+            for boost in cache:
+                print(boost)
+
+                async with session.get(f'https://www.enligne.parionssport.fdj.fr/lvs-api/ff/{boost["matchId"]}?lineId=1&originId=3&ext=1&showPromotions=true&showMarketTypeGroups=true', headers=headers) as response:
+
+                    print('test')
+                    if response.status == 200:
+                        response = await response.json()
+
+                        print('Boost', boost['betId'])
+
+                        get_boosts(response, finalBoosts)
+
+                    else:
+                        print(f"Request failed with status: {response.status}")
+
+
+        finalBoosts = [dict(t) for t in {tuple(d.items()) for d in finalBoosts}]
         await publish_boosts('psel', bot, finalBoosts, '0x0000ff')
 
     except Exception as e:

@@ -71,7 +71,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 message = await channel.send(f'{boost["intitule"]}', embed=embed)
                 await message.edit(content='', embed=embed)
                 thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
-                await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
+                # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
                 boost['message_id'] = message.id
                 cache.append(boost)
 

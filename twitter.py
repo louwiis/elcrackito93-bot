@@ -10,16 +10,6 @@ client = Client(
     access_token_secret=os.getenv('TWITTER_ACCESS_SECRET')
 )
 
-
-# const tweet = async (boost, bookmakerName) => {
-#   try {
-#     console.log(`🚀🔥 Nouveau boooost ${bookmakerName.charAt(0).toUpperCase() + bookmakerName.slice(1).toLowerCase()} !\n\n📍 ${boost.title}\n📝 ${boost.description}\n\n📈 ${boost.odd !== '?' ? boost.odd + ' ->' : ''} ${boost.boostedOdd}\n💰 ${boost.maxBet}€ max\n\n❤️ si tu prends !\n\n#TeamParieur #Boost #${bookmakerName.charAt(0).toUpperCase() + bookmakerName.slice(1).toLowerCase()}`)
-#     await twitterClient.v2.tweet({text: `🚀🔥 Nouveau boooost ${bookmakerName.charAt(0).toUpperCase() + bookmakerName.slice(1).toLowerCase()} !\n\n📍 ${boost.title}\n📝 ${boost.description}\n\n📈 ${boost.odd !== '?' ? boost.odd + ' ->' : ''} ${boost.boostedOdd}\n💰 ${boost.maxBet}€ max\n\n❤️ si tu prends !\n\n#TeamParieur #Boost #${bookmakerName.charAt(0).toUpperCase() + bookmakerName.slice(1).toLowerCase()}`, });
-#   } catch (e) {
-#     console.log(e);
-#   }
-# }
-
 async def tweet(boost, bookmaker_name):
     try:
         tweet_text = (
