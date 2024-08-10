@@ -42,7 +42,8 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MT_MAIN_CHANNEL_ID = int(os.getenv(f'MT_{bookmaker.upper()}_MAIN_CHANNEL_ID'))
     SECONDARY_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
     MT_SECONDARY_CHANNEL_ID = int(os.getenv(f'MT_{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
-    FORUM_CHANNEL_ID = int(os.getenv(f'BOOSTS_FORUM_CHANNEL_ID'))
+    MT_BOOSTS_FORUM_CHANNEL_ID = int(os.getenv(f'MT_BOOSTS_FORUM_CHANNEL_ID'))
+    DEV_BOOSTS_FORUM_CHANNEL_ID = int(os.getenv(f'DEV_BOOSTS_FORUM_CHANNEL_ID'))
     
     cache_file_path = os.path.join(os.getcwd(), cache_path, bookmaker, 'cache.json')
 
@@ -87,7 +88,8 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         mtChannelId = MT_MAIN_CHANNEL_ID if boost['bigBoost'] else MT_SECONDARY_CHANNEL_ID
         channel = bot.get_channel(channelId)
         mtChannel = bot.get_channel(mtChannelId)
-        boostsForum = bot.get_channel(FORUM_CHANNEL_ID)
+        mtBoostsForum = bot.get_channel(MT_BOOSTS_FORUM_CHANNEL_ID)
+        devBoostsForum = bot.get_channel(DEV_BOOSTS_FORUM_CHANNEL_ID)
 
         if not boostCache:
             if channel:
@@ -114,10 +116,16 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             else:
                 logging.warning(f"Channel not found: {mtChannelId}")
 
-            if boostsForum:
-                tags = [tag for tag in boostsForum.available_tags if tag.name == arobase]
-                post = await boostsForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed, applied_tags=tags)
-                boost['forum_thread_id'] = post.thread.id
+            if mtBoostsForum and devBoostsForum:
+                mtTags = [tag for tag in mtBoostsForum.available_tags if tag.name == arobase]
+                devTags = [tag for tag in devBoostsForum.available_tags if tag.name == arobase]
+
+                mtPost = await mtBoostsForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed, applied_tags=mtTags)
+                devPost = await devBoostsForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed, applied_tags=devTags)
+                
+                boost['mt_forum_thread_id'] = mtPost.thread.id
+                boost['dev_forum_thread_id'] = devPost.thread.id
+
             
         else:
             boost['message_id'] = boostCache['message_id']
@@ -133,11 +141,13 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
                 message = await channel.fetch_message(boostCache['message_id'])
                 mtMessage = await mtChannel.fetch_message(boostCache['mt_message_id'])
-                post = boostsForum.get_thread(boostCache['forum_thread_id'])
+                mtPost = mtBoostsForum.get_thread(boostCache['mt_forum_thread_id'])
+                devPost = devBoostsForum.get_thread(boostCache['dev_forum_thread_id'])
 
                 await message.thread.send('Le boost a été modifié :', embed=embed)
                 await mtMessage.thread.send('Le boost a été modifié :', embed=embed)
-                await post.send('Le boost a été modifié :', embed=embed)
+                await mtPost.send('Le boost a été modifié :', embed=embed)
+                await devPost.send('Le boost a été modifié :', embed=embed)
 
     try:
         with open(cache_file_path, 'w') as file:
