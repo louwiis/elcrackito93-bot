@@ -23,7 +23,6 @@ def get_boosts(response, finalBoosts):
                 if '€' in boost['desc'] and 'mise max' in boost['desc'].lower():
                     maxBet = boost['desc'].lower().split('mise max ')[1].split('€')[0].strip()                                      
 
-                    print(f'intitule: {boost["desc"].split(" (")[0].strip()} / {boostedBet["desc"]} / {boost["period"]}')
                     finalBoosts.append({
                         'matchId': boost['parent'],
                         'betId': id,
@@ -85,15 +84,10 @@ async def pselZebet(bot):
                 cache = []
 
             for boost in cache:
-                print(boost)
 
                 async with session.get(f'https://www.enligne.parionssport.fdj.fr/lvs-api/ff/{boost["matchId"]}?lineId=1&originId=3&ext=1&showPromotions=true&showMarketTypeGroups=true', headers=headers) as response:
-
-                    print('test')
                     if response.status == 200:
                         response = await response.json()
-
-                        print('Boost', boost['betId'])
 
                         get_boosts(response, finalBoosts)
 

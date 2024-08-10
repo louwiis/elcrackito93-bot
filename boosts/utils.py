@@ -91,7 +91,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
         if not boostCache:
             if channel:
-                # print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
+                print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
 
                 message = await channel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
                 await message.edit(content='Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed)
