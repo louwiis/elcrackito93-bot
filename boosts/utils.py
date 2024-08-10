@@ -16,6 +16,19 @@ from twitter import tweet
 
 cache_path = 'boosts'
 
+roles = {
+    'betclic': 1271667918983397438,
+    'winamax': 1271668054639640627,
+    'unibet': 1271668192711938069,
+    'pselZebet': 1271668295287836763,
+    'pmu': 1271668297066221598,
+    'netbet': 1271668302464417873,
+    'winamax-autres': 1271668139045814272,
+    'unibet-autres': 1271668193378697277,
+    'pselZebet-autres': 1271668295967309916,
+    'pmu-autres': 1271668297632317541,
+}
+
 async def search_boosts(bot):
     await winamax(bot)
     await unibet(bot)
@@ -49,6 +62,11 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         cache = []
 
     for boost in finalBoosts:
+        arobase = bookmaker
+
+        if boost['bigBoost'] == False and bookmaker != 'netbet':
+            bookmaker = f'{bookmaker}-autres'
+
         embed = discord.Embed(
             title=boost['title'],
             description=boost['intitule'],
@@ -75,8 +93,8 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             if channel:
                 # print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
 
-                message = await channel.send(f'{boost["intitule"]}', embed=embed)
-                await message.edit(content='', embed=embed)
+                message = await channel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
+                await message.edit(content='Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed)
                 thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
                 # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
                 boost['message_id'] = message.id
@@ -88,8 +106,8 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 logging.warning(f"Channel not found: {channelId}")
 
             if mtChannel:
-                message = await mtChannel.send(f'{boost["intitule"]}', embed=embed)
-                await message.edit(content='', embed=embed)
+                message = await mtChannel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
+                await message.edit(content='Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed)
                 thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
                 # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
                 boost['mt_message_id'] = message.id
@@ -97,8 +115,8 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 logging.warning(f"Channel not found: {mtChannelId}")
 
             if boostsForum:
-                tags = [tag for tag in boostsForum.available_tags if tag.name == bookmaker]
-                post = await boostsForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, embed=embed, applied_tags=tags)
+                tags = [tag for tag in boostsForum.available_tags if tag.name == arobase]
+                post = await boostsForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed, applied_tags=tags)
                 boost['forum_thread_id'] = post.thread.id
             
         else:
