@@ -92,29 +92,29 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         devBoostsForum = bot.get_channel(DEV_BOOSTS_FORUM_CHANNEL_ID)
 
         if not boostCache:
-            if channel:
-                print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
+            # if channel:
+            #     print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
 
-                message = await channel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
-                await message.edit(content='Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed)
-                thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
-                # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
-                boost['message_id'] = message.id
-                cache.append(boost)
+            #     message = await channel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
+            #     await message.edit(content='Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed)
+            #     thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
+            #     # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
+            #     boost['message_id'] = message.id
+            #     cache.append(boost)
 
-                if MAIN_CHANNEL_ID == channel.id:
-                    await tweet(boost, bookmaker)
-            else:
-                logging.warning(f"Channel not found: {channelId}")
+            #     if MAIN_CHANNEL_ID == channel.id:
+            #         await tweet(boost, bookmaker)
+            # else:
+            #     logging.warning(f"Channel not found: {channelId}")
 
-            if mtChannel:
-                message = await mtChannel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
-                await message.edit(content='Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed)
-                thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
-                # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
-                boost['mt_message_id'] = message.id
-            else:
-                logging.warning(f"Channel not found: {mtChannelId}")
+            # if mtChannel:
+            #     message = await mtChannel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
+            #     await message.edit(content='Nouveau booost\n\n<@&{roles[arobase]}>', embed=embed)
+            #     thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
+            #     # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
+            #     boost['mt_message_id'] = message.id
+            # else:
+            #     logging.warning(f"Channel not found: {mtChannelId}")
 
             if mtBoostsForum and devBoostsForum:
                 mtTags = [tag for tag in mtBoostsForum.available_tags if tag.name == arobase]
