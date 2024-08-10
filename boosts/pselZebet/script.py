@@ -5,10 +5,10 @@ import re
 import json
 import pytz
 
-cache_file_path = './boosts/psel/cache.json'
+cache_file_path = './boosts/pselZebet/cache.json'
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, filename='./boosts/psel/log.log', format='%(asctime)s %(levelname)s:%(message)s')
+logging.basicConfig(level=logging.INFO, filename='./boosts/pselZebet/log.log', format='%(asctime)s %(levelname)s:%(message)s')
 
 def get_boosts(response, finalBoosts):
     if 'items' in response:
@@ -38,7 +38,7 @@ def get_boosts(response, finalBoosts):
                         'startTime': convert_to_iso(match['start'])
                     })
 
-async def psel(bot):
+async def pselZebet(bot):
     from boosts.utils import publish_boosts
 
     url = 'https://www.enligne.parionssport.fdj.fr/lvs-api/next/50/p58245556,p58429681,p58421879,p58422124,p58450232,p58557545,p58425119,p58422320,p58422324,p58406581,p58499583,p58470484,p58421212,p58559769,p58559623,p58429444,p58416562,p58474788,p58598438,p58712243?lineId=1&originId=3&breakdownEventsIntoDays=true&pageIndex=0&showPromotions=true'
@@ -102,10 +102,10 @@ async def psel(bot):
 
 
         finalBoosts = [dict(t) for t in {tuple(d.items()) for d in finalBoosts}]
-        await publish_boosts('psel', bot, finalBoosts, '0x0000ff')
+        await publish_boosts('pselZebet', bot, finalBoosts, '0x0000ff')
 
     except Exception as e:
-        logging.error(f"Error fetching Unibet boosts: {e}")
+        logging.error(f"Error fetching Psel boosts: {e}")
         return
 
 

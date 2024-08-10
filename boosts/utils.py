@@ -7,7 +7,7 @@ import pytz
 
 from boosts.winamax.script import winamax
 from boosts.unibet.script import unibet
-from boosts.psel.script import psel
+from boosts.pselZebet.script import pselZebet
 from boosts.pmu.script import pmu
 from boosts.netbet.script import netbet
 from boosts.betclic.script import betclic
@@ -19,7 +19,7 @@ cache_path = 'boosts'
 async def search_boosts(bot):
     await winamax(bot)
     await unibet(bot)
-    await psel(bot)
+    await pselZebet(bot)
     await pmu(bot)
     await netbet(bot)
     await betclic(bot)
@@ -29,6 +29,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MT_MAIN_CHANNEL_ID = int(os.getenv(f'MT_{bookmaker.upper()}_MAIN_CHANNEL_ID'))
     SECONDARY_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
     MT_SECONDARY_CHANNEL_ID = int(os.getenv(f'MT_{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
+    FORUM_CHANNEL_ID = int(os.getenv(f'BOOSTS_FORUM_CHANNEL_ID'))
     
     cache_file_path = os.path.join(os.getcwd(), cache_path, bookmaker, 'cache.json')
 
@@ -68,10 +69,11 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         mtChannelId = MT_MAIN_CHANNEL_ID if boost['bigBoost'] else MT_SECONDARY_CHANNEL_ID
         channel = bot.get_channel(channelId)
         mtChannel = bot.get_channel(mtChannelId)
+        boostsForum = bot.get_channel(FORUM_CHANNEL_ID)
 
         if not boostCache:
             if channel:
-                print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
+                # print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
 
                 message = await channel.send(f'{boost["intitule"]}', embed=embed)
                 await message.edit(content='', embed=embed)
@@ -91,13 +93,18 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
                 # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
                 boost['mt_message_id'] = message.id
-                cache.append(boost)
             else:
                 logging.warning(f"Channel not found: {mtChannelId}")
 
+            if boostsForum:
+                tags = [tag for tag in boostsForum.available_tags if tag.name == bookmaker]
+                post = await boostsForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, embed=embed, applied_tags=tags)
+                boost['forum_thread_id'] = post.thread.id
+            
         else:
             boost['message_id'] = boostCache['message_id']
             boost['mt_message_id'] = boostCache['mt_message_id']
+            boost['forum_thread_id'] = boostCache['forum_thread_id']
             boostCache['startTime'] = boost['startTime']
 
             update_fields = ['boostedOdd', 'maxBet', 'title', 'intitule']
@@ -108,9 +115,11 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
                 message = await channel.fetch_message(boostCache['message_id'])
                 mtMessage = await mtChannel.fetch_message(boostCache['mt_message_id'])
+                post = boostsForum.get_thread(boostCache['forum_thread_id'])
 
                 await message.thread.send('Le boost a été modifié :', embed=embed)
                 await mtMessage.thread.send('Le boost a été modifié :', embed=embed)
+                await post.send('Le boost a été modifié :', embed=embed)
 
     try:
         with open(cache_file_path, 'w') as file:
