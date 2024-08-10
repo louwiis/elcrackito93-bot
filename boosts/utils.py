@@ -26,7 +26,9 @@ async def search_boosts(bot):
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
+    MT_MAIN_CHANNEL_ID = int(os.getenv(f'MT_{bookmaker.upper()}_MAIN_CHANNEL_ID'))
     SECONDARY_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
+    MT_SECONDARY_CHANNEL_ID = int(os.getenv(f'MT_{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
     
     cache_file_path = os.path.join(os.getcwd(), cache_path, bookmaker, 'cache.json')
 
@@ -62,9 +64,12 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
         boostCache = next((boostCache for boostCache in cache if boost["betId"] == boostCache["betId"]), None)
         
-        if not boostCache:
-            channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
+        channelId = MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID            
+        mtChannelId = MT_MAIN_CHANNEL_ID if boost['bigBoost'] else MT_SECONDARY_CHANNEL_ID
+        channel = bot.get_channel(channelId)
+        mtChannel = bot.get_channel(mtChannelId)
 
+        if not boostCache:
             if channel:
                 print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
 
@@ -78,9 +83,21 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 if MAIN_CHANNEL_ID == channel.id:
                     await tweet(boost, bookmaker)
             else:
-                logging.warning(f"Channel not found: {MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID}")
+                logging.warning(f"Channel not found: {channelId}")
+
+            if mtChannel:
+                message = await mtChannel.send(f'{boost["intitule"]}', embed=embed)
+                await message.edit(content='', embed=embed)
+                thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
+                # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
+                boost['mt_message_id'] = message.id
+                cache.append(boost)
+            else:
+                logging.warning(f"Channel not found: {mtChannelId}")
+
         else:
             boost['message_id'] = boostCache['message_id']
+            boost['mt_message_id'] = boostCache['mt_message_id']
             boostCache['startTime'] = boost['startTime']
 
             update_fields = ['boostedOdd', 'maxBet', 'title', 'intitule']
@@ -89,10 +106,11 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 cache.remove(boostCache)
                 cache.append(boost)
 
-                channel = bot.get_channel(MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID)
                 message = await channel.fetch_message(boostCache['message_id'])
+                mtMessage = await mtChannel.fetch_message(boostCache['mt_message_id'])
 
                 await message.thread.send('Le boost a été modifié :', embed=embed)
+                await mtMessage.thread.send('Le boost a été modifié :', embed=embed)
 
     try:
         with open(cache_file_path, 'w') as file:
