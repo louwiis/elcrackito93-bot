@@ -41,6 +41,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
     SECONDARY_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
     MT_BOOSTS_FORUM_CHANNEL_ID = int(os.getenv(f'MT_BOOSTS_FORUM_CHANNEL_ID'))
+    MT_ALL_BOOSTS_CHANNEL_ID = int(os.getenv(f'MT_ALL_BOOSTS_CHANNEL_ID'))
     
     cache_file_path = os.path.join(os.getcwd(), cache_path, bookmaker, 'cache.json')
 
@@ -76,13 +77,14 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         embed.add_field(name='Mise max', value=f"{boost['maxBet']} €", inline=True)    
 
         formatted_time = french_time.strftime('%d/%m/%Y %H:%M:%S')
-
-        embed.set_footer(text=formatted_time)
+    
+        embed.set_footer(text=f"Publié le {formatted_time} | {bookmaker.capitalize()}")
 
         boostCache = next((boostCache for boostCache in cache if boost["betId"] == boostCache["betId"]), None)
         
         channelId = MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID            
         channel = bot.get_channel(channelId)
+        mtChannel = bot.get_channel(MT_ALL_BOOSTS_CHANNEL_ID)
         mtBoostsForum = bot.get_channel(MT_BOOSTS_FORUM_CHANNEL_ID)
 
         if not boostCache:
@@ -90,6 +92,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
 
                 message = await channel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
+                mtMessage = await mtChannel.send('', embed=embed)
 
                 if message is not None:
                     await message.edit(content=f'<@&{roles[arobase]}>', embed=embed)
@@ -108,7 +111,6 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             else:
                 logging.warning(f"Channel not found: {channelId}")
 
-            
         else:
             boost['message_id'] = boostCache['message_id']
             boost['mt_forum_thread_id'] = boostCache['mt_forum_thread_id']
@@ -125,6 +127,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
                 await message.thread.send('Le boost a été modifié :', embed=embed)
                 await mtPost.send('Le boost a été modifié :', embed=embed)
+                mtMessage = await mtChannel.send('', embed=embed)
 
     try:
         with open(cache_file_path, 'w') as file:
