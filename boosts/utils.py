@@ -101,6 +101,10 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
                 message = await channel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
                 mtMessage = await mtChannel.send('', embed=embed)
+                await mtMessage.add_reaction('❓')
+                await mtMessage.add_reaction('🍀')
+                await mtMessage.add_reaction('👀')
+                await mtMessage.add_reaction('❌')
 
                 if message is not None:
                     await message.edit(content=f'<@&{roles[arobase]}>', embed=embed)
@@ -141,6 +145,10 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 await message.thread.send('Le boost a été modifié :', embed=embed)
                 await mtPost.send('Le boost a été modifié :', embed=embed)
                 mtMessage = await mtChannel.send('', embed=embed)
+                await mtMessage.add_reaction('❓')
+                await mtMessage.add_reaction('🍀')
+                await mtMessage.add_reaction('👀')
+                await mtMessage.add_reaction('❌')
 
     try:
         with open(cache_file_path, 'w') as file:
