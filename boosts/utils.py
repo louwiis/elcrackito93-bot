@@ -40,8 +40,11 @@ async def search_boosts(bot):
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
     SECONDARY_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
-    MT_BOOSTS_FORUM_CHANNEL_ID = int(os.getenv(f'MT_BOOSTS_FORUM_CHANNEL_ID'))
+    FORUM_BOOSTS_CHANNEL_ID = int(os.getenv(f'FORUM_BOOSTS_CHANNEL_ID'))
     MT_ALL_BOOSTS_CHANNEL_ID = int(os.getenv(f'MT_ALL_BOOSTS_CHANNEL_ID'))
+
+    mtChannel = bot.get_channel(MT_ALL_BOOSTS_CHANNEL_ID)
+    boostsForum = bot.get_channel(FORUM_BOOSTS_CHANNEL_ID)
     
     cache_file_path = os.path.join(os.getcwd(), cache_path, bookmaker, 'cache.json')
 
@@ -51,7 +54,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     
     try:
         with open(cache_file_path, 'r') as file:
-            cache = [boost for boost in json.load(file) if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) > utc_time - timedelta(hours=12)]
+            cache = json.load(file)
 
     except FileNotFoundError:
         cache = []
@@ -60,7 +63,17 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         print(f"Error reading cache file: {e}")
         cache = []
 
+    toDelete = [boost for boost in cache if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) <= utc_time - timedelta(hours=5)]
+
+    for boost in toDelete:
+        thread = boostsForum.get_thread(boost['mt_forum_thread_id'])
+        await thread.edit(archived=True)
+
+    cache = [boost for boost in cache if boost not in toDelete]
+
     for boost in finalBoosts:
+        channelId = MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID   
+        channel = bot.get_channel(channelId)         
         arobase = bookmaker
 
         if boost['bigBoost'] == False and bookmaker != 'netbet':
@@ -82,11 +95,6 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
         boostCache = next((boostCache for boostCache in cache if boost["betId"] == boostCache["betId"]), None)
         
-        channelId = MAIN_CHANNEL_ID if boost['bigBoost'] else SECONDARY_CHANNEL_ID            
-        channel = bot.get_channel(channelId)
-        mtChannel = bot.get_channel(MT_ALL_BOOSTS_CHANNEL_ID)
-        mtBoostsForum = bot.get_channel(MT_BOOSTS_FORUM_CHANNEL_ID)
-
         if not boostCache:
             if channel:
                 print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
@@ -99,18 +107,17 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                     thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
                     # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
                     boost['message_id'] = message.id
-                    cache.append(boost)
 
-                    if mtBoostsForum:
-                        mtTags = [tag for tag in mtBoostsForum.available_tags if tag.name == arobase]
-                        mtPost = await mtBoostsForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'<@&{roles[arobase]}>', embed=embed, applied_tags=mtTags)
-                        boost['mt_forum_thread_id'] = mtPost.thread.id
-
+                if boostsForum:
+                    mtTags = [tag for tag in boostsForum.available_tags if tag.name == arobase]
+                    mtPost = await boostsForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'<@&{roles[arobase]}>', embed=embed, applied_tags=mtTags)
+                    boost['mt_forum_thread_id'] = mtPost.thread.id
                     if MAIN_CHANNEL_ID == channel.id:
                         await tweet(boost, bookmaker)
+
+                cache.append(boost)
             else:
                 logging.warning(f"Channel not found: {channelId}")
-
         else:
             boost['message_id'] = boostCache['message_id']
             boost['mt_forum_thread_id'] = boostCache['mt_forum_thread_id']
@@ -123,7 +130,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 cache.append(boost)
 
                 message = await channel.fetch_message(boostCache['message_id'])
-                mtPost = mtBoostsForum.get_thread(boostCache['mt_forum_thread_id'])
+                mtPost = boostsForum.get_thread(boostCache['mt_forum_thread_id'])
 
                 await message.thread.send('Le boost a été modifié :', embed=embed)
                 await mtPost.send('Le boost a été modifié :', embed=embed)
