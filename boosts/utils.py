@@ -111,10 +111,16 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 if boostsForum:
                     mtTags = [tag for tag in boostsForum.available_tags if tag.name == arobase]
                     mtPost = await boostsForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'<@&{roles[arobase]}>', embed=embed, applied_tags=mtTags)
-                    boost['mt_forum_thread_id'] = mtPost.thread.id
-                    if MAIN_CHANNEL_ID == channel.id:
-                        await tweet(boost, bookmaker)
+                    await mtPost.message.add_reaction('❓')
+                    await mtPost.message.add_reaction('🍀')
+                    await mtPost.message.add_reaction('👀')
+                    await mtPost.message.add_reaction('❌')
 
+                    boost['mt_forum_thread_id'] = mtPost.thread.id
+
+
+                if MAIN_CHANNEL_ID == channel.id:
+                    await tweet(boost, bookmaker)
                 cache.append(boost)
             else:
                 logging.warning(f"Channel not found: {channelId}")
