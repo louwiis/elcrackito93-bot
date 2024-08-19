@@ -66,7 +66,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     toDelete = [boost for boost in cache if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) <= utc_time - timedelta(hours=5)]
 
     for boost in toDelete:
-        thread = boostsForum.get_thread(boost['mt_forum_thread_id'])
+        thread = boostsForum.get_thread(boost['forum_boosts_thread_id'])
         await thread.edit(archived=True)
 
     cache = [boost for boost in cache if boost not in toDelete]
@@ -119,8 +119,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                     await mtPost.message.add_reaction('🍀')
                     await mtPost.message.add_reaction('👀')
                     await mtPost.message.add_reaction('❌')
-
-                    boost['mt_forum_thread_id'] = mtPost.thread.id
+                    boost['forum_boosts_thread_id'] = mtPost.thread.id
 
 
                 if MAIN_CHANNEL_ID == channel.id:
@@ -130,7 +129,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 logging.warning(f"Channel not found: {channelId}")
         else:
             boost['message_id'] = boostCache['message_id']
-            boost['mt_forum_thread_id'] = boostCache['mt_forum_thread_id']
+            boost['forum_boosts_thread_id'] = boostCache['forum_boosts_thread_id']
             boostCache['startTime'] = boost['startTime']
 
             update_fields = ['boostedOdd', 'maxBet', 'title', 'intitule']
