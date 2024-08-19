@@ -139,7 +139,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 cache.append(boost)
 
                 message = await channel.fetch_message(boostCache['message_id'])
-                mtPost = boostsForum.get_thread(boostCache['mt_forum_thread_id'])
+                mtPost = boostsForum.get_thread(boostCache['forum_boosts_thread_id'])
 
                 await message.thread.send('Le boost a été modifié :', embed=embed)
                 await mtPost.send('Le boost a été modifié :', embed=embed)
