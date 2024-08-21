@@ -40,12 +40,12 @@ async def search_boosts(bot):
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
     SECONDARY_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_SECONDARY_CHANNEL_ID'))
+
     FORUM_ID = int(os.getenv(f'FORUM_ID'))
-
-    # MT_ALL_BOOSTS_CHANNEL_ID = int(os.getenv(f'MT_ALL_BOOSTS_CHANNEL_ID'))
-
     forum = bot.get_channel(FORUM_ID)
-    # mtChannel = bot.get_channel(MT_ALL_BOOSTS_CHANNEL_ID)
+
+    MT_FORUM_ID = int(os.getenv(f'MT_FORUM_ID'))
+    mtForum = bot.get_channel(MT_FORUM_ID)
     
     cache_file_path = os.path.join(os.getcwd(), cache_path, bookmaker, 'cache.json')
 
@@ -157,6 +157,33 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 await mtPost.message.add_reaction('👀')
                 await mtPost.message.add_reaction('❌')
                 boost['forum_post_id'] = mtPost.thread.id
+
+        if mtForum:
+            if boostCache:
+                if 'mt_forum_post_id' not in boostCache:
+                    mtTags = [tag for tag in forum.available_tags if tag.name == arobase]
+                    mtPost = await forum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'', embed=embed, applied_tags=mtTags)
+                    await mtPost.message.add_reaction('❓')
+                    await mtPost.message.add_reaction('🍀')
+                    await mtPost.message.add_reaction('👀')
+                    await mtPost.message.add_reaction('❌')
+                    boost['mt_forum_post_id'] = mtPost.thread.id
+                else:
+                    boost['mt_forum_post_id'] = boostCache['mt_forum_post_id']
+
+                    if any(boost[el] != boostCache[el] for el in update_fields):
+                        forumPost = forum.get_thread(boostCache['mt_forum_post_id'])
+                        if forumPost:
+                            await forumPost.send('Le boost a été modifié :', embed=embed)
+
+            else:
+                mtTags = [tag for tag in forum.available_tags if tag.name == arobase]
+                mtPost = await forum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'', embed=embed, applied_tags=mtTags)
+                await mtPost.message.add_reaction('❓')
+                await mtPost.message.add_reaction('🍀')
+                await mtPost.message.add_reaction('👀')
+                await mtPost.message.add_reaction('❌')
+                boost['mt_forum_post_id'] = mtPost.thread.id
 
         cache.append(boost)
     try:
