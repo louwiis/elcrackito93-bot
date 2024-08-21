@@ -63,7 +63,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         print(f"Error reading cache file: {e}")
         cache = []
 
-    toDelete = [boost for boost in cache if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) <= utc_time - timedelta(hours=5)]
+    toDelete = [boost for boost in cache if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) <= french_time - timedelta(hours=3)]
 
     for boost in toDelete:
         thread = boostsForum.get_thread(boost['forum_boosts_thread_id'])
