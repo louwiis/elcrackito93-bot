@@ -66,8 +66,9 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     toDelete = [boost for boost in cache if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) <= french_time - timedelta(hours=3)]
 
     for boost in toDelete:
-        thread = boostsForum.get_thread(boost['forum_boosts_thread_id'])
-        await thread.edit(archived=True)
+        try:
+            thread = boostsForum.get_thread(boost['forum_boosts_thread_id'])
+            await thread.edit(archived=True)
 
     cache = [boost for boost in cache if boost not in toDelete]
 

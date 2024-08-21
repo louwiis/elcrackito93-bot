@@ -83,5 +83,6 @@ async def netbet(bot):
         await publish_boosts('netbet', bot, finalBoosts, '0x343744')
 
     except Exception as e:
-        logging.error(f"Error fetching Unibet boosts: {e}")
+        logging.error(f"Error fetching Netbet boosts: {e}")
+        await publish_boosts('netbet', bot, finalBoosts, '0x343744')
         return
