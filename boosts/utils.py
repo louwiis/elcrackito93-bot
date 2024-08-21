@@ -67,8 +67,15 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
     toDelete = [boost for boost in cache if datetime.fromisoformat(boost['startTime']).replace(tzinfo=pytz.utc) <= french_time - timedelta(hours=3)]
 
     for boost in toDelete:
-        thread = forum.get_thread(boost['forum_post_id'])
-        await thread.edit(archived=True)
+        if 'forum_post_id' in boost:
+            post = forum.get_thread(boost['forum_post_id'])
+            if post:
+                await post.edit(archived=True)
+
+        if 'mt_forum_post_id' in boost:
+            mtPost = mtForum.get_thread(boost['mt_forum_post_id'])
+            if mtPost:
+               await mtPost.edit(archived=True)
 
     cache = [boost for boost in cache if boost not in toDelete]
 
@@ -93,11 +100,10 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
         boostCache = next((boostCache for boostCache in cache if boost["betId"] == boostCache["betId"]), None)
         
-        if boostCache:
-            if boost['bigBoost'] == False and bookmaker != 'netbet':
-                boostCache['startTime'] = boost['startTime']
-                arobase = f'{bookmaker}-autres'
+        if boost['bigBoost'] == False and bookmaker != 'netbet':
+            arobase = f'{bookmaker}-autres'
 
+        if boostCache:
             update_fields = ['boostedOdd', 'maxBet', 'title', 'intitule']
             cache.remove(boostCache)
         else:
