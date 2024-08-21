@@ -30,12 +30,12 @@ roles = {
 }
 
 async def search_boosts(bot):
-    await winamax(bot)
+    # await winamax(bot)
     await unibet(bot)
-    await pselZebet(bot)
-    await pmu(bot)
-    await netbet(bot)
-    await betclic(bot)
+    # await pselZebet(bot)
+    # await pmu(bot)
+    # await netbet(bot)
+    # await betclic(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
@@ -77,9 +77,6 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
         channel = bot.get_channel(channelId)         
         arobase = bookmaker
 
-        if boost['bigBoost'] == False and bookmaker != 'netbet':
-            arobase = f'{bookmaker}-autres'
-
         embed = discord.Embed(
             title=boost['title'],
             description=boost['intitule'],
@@ -96,24 +93,63 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
 
         boostCache = next((boostCache for boostCache in cache if boost["betId"] == boostCache["betId"]), None)
         
-        if not boostCache:
-            if channel:
-                print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
+        if boostCache:
+            if boost['bigBoost'] == False and bookmaker != 'netbet':
+                boostCache['startTime'] = boost['startTime']
+                arobase = f'{bookmaker}-autres'
 
+            update_fields = ['boostedOdd', 'maxBet', 'title', 'intitule']
+            cache.remove(boostCache)
+        else:
+            print(f"New boooost: {boost['intitule']} - {boost['startTime']}")
+
+        if boost['bigBoost']:
+            await tweet(boost, bookmaker)
+
+        if channel:
+            if boostCache:
+                if 'message_id' not in boostCache:
+                    message = await channel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
+
+                    if message:
+                        await message.edit(content=f'<@&{roles[arobase]}>', embed=embed)
+                        thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
+                        boost['message_id'] = message.id
+                else:
+                    boost['message_id'] = boostCache['message_id']
+
+                    if any(boost[el] != boostCache[el] for el in update_fields):
+                        message = await channel.fetch_message(boostCache['message_id'])
+
+                        if message:
+                            await message.thread.send('Le boost a été modifié :', embed=embed)
+            else: 
                 message = await channel.send(f'{boost["intitule"]}\n\n<@&{roles[arobase]}>', embed=embed)
-                # mtMessage = await mtChannel.send('', embed=embed)
-                # await mtMessage.add_reaction('❓')
-                # await mtMessage.add_reaction('🍀')
-                # await mtMessage.add_reaction('👀')
-                # await mtMessage.add_reaction('❌')
 
-                if message is not None:
+                if message:
                     await message.edit(content=f'<@&{roles[arobase]}>', embed=embed)
                     thread = await message.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60)
-                    # await thread.send('<@&1265314857889300523> Thread du nouveau boost', silent=True)
                     boost['message_id'] = message.id
 
-            if forum:
+        if forum:
+            if boostCache:
+                if 'forum_post_id' not in boostCache:
+                    mtTags = [tag for tag in forum.available_tags if tag.name == arobase]
+                    mtPost = await forum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'<@&{roles[arobase]}>', embed=embed, applied_tags=mtTags)
+                    await mtPost.message.add_reaction('❓')
+                    await mtPost.message.add_reaction('🍀')
+                    await mtPost.message.add_reaction('👀')
+                    await mtPost.message.add_reaction('❌')
+                    boost['forum_post_id'] = mtPost.thread.id
+                else:
+                    boost['forum_post_id'] = boostCache['forum_post_id']
+
+                    if any(boost[el] != boostCache[el] for el in update_fields):
+                        forumPost = forum.get_thread(boostCache['forum_post_id'])
+                        if forumPost:
+                            await forumPost.send('Le boost a été modifié :', embed=embed)
+
+            else:
                 mtTags = [tag for tag in forum.available_tags if tag.name == arobase]
                 mtPost = await forum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'<@&{roles[arobase]}>', embed=embed, applied_tags=mtTags)
                 await mtPost.message.add_reaction('❓')
@@ -122,37 +158,7 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
                 await mtPost.message.add_reaction('❌')
                 boost['forum_post_id'] = mtPost.thread.id
 
-
-            if boost['bigBoost']:
-                await tweet(boost, bookmaker)
-
-            cache.append(boost)
-        else:
-            boost['message_id'] = boostCache['message_id']
-            boost['forum_post_id'] = boostCache['forum_post_id']
-            boostCache['startTime'] = boost['startTime']
-
-            update_fields = ['boostedOdd', 'maxBet', 'title', 'intitule']
-            # if boost != boostCache:
-            if any(boost[el] != boostCache[el] for el in update_fields):
-                cache.remove(boostCache)
-                cache.append(boost)
-
-                message = await channel.fetch_message(boostCache['message_id'])
-                if message:
-                    await message.thread.send('Le boost a été modifié :', embed=embed)
-
-                forumPost = forum.get_thread(boostCache['forum_post_id'])
-                if forumPost:
-                    await forumPost.send('Le boost a été modifié :', embed=embed)
-
-                # mtMessage = await mtChannel.send('', embed=embed)
-                # if mtMessage:
-                #     await mtMessage.add_reaction('❓')
-                #     await mtMessage.add_reaction('🍀')
-                #     await mtMessage.add_reaction('👀')
-                #     await mtMessage.add_reaction('❌')
-
+        cache.append(boost)
     try:
         with open(cache_file_path, 'w') as file:
             json.dump(cache, file, indent=4)
