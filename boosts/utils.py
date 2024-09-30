@@ -31,11 +31,11 @@ roles = {
 
 async def search_boosts(bot):
     await winamax(bot)
-    # await unibet(bot)
-    # await pselZebet(bot)
-    # await pmu(bot)
-    # await netbet(bot)
-    # await betclic(bot)
+    await unibet(bot)
+    await pselZebet(bot)
+    await pmu(bot)
+    await netbet(bot)
+    await betclic(bot)
 
 async def publish_boosts(bookmaker, bot, finalBoosts, color):
     MAIN_CHANNEL_ID = int(os.getenv(f'{bookmaker.upper()}_MAIN_CHANNEL_ID'))
