@@ -166,32 +166,32 @@ async def publish_boosts(bookmaker, bot, finalBoosts, color):
             #         await mtPost.message.add_reaction('❌')
             #         boost['forum_post_id'] = mtPost.thread.id
 
-            # if mtForum:
-            #     if boostCache:
-            #         if 'mt_forum_post_id' not in boostCache:
-            #             mtTags = [tag for tag in mtForum.available_tags if tag.name == arobase]
-            #             mtPost = await mtForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'', embed=embed, applied_tags=mtTags)
-            #             await mtPost.message.add_reaction('❓')
-            #             await mtPost.message.add_reaction('🍀')
-            #             await mtPost.message.add_reaction('👀')
-            #             await mtPost.message.add_reaction('❌')
-            #             boost['mt_forum_post_id'] = mtPost.thread.id
-            #         else:
-            #             boost['mt_forum_post_id'] = boostCache['mt_forum_post_id']
+            if mtForum:
+                if boostCache:
+                    if 'mt_forum_post_id' not in boostCache:
+                        mtTags = [tag for tag in mtForum.available_tags if tag.name == arobase]
+                        mtPost = await mtForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'', embed=embed, applied_tags=mtTags)
+                        await mtPost.message.add_reaction('❓')
+                        await mtPost.message.add_reaction('🍀')
+                        await mtPost.message.add_reaction('👀')
+                        await mtPost.message.add_reaction('❌')
+                        boost['mt_forum_post_id'] = mtPost.thread.id
+                    else:
+                        boost['mt_forum_post_id'] = boostCache['mt_forum_post_id']
 
-            #             if any(boost[el] != boostCache[el] for el in update_fields):
-            #                 forumPost = mtForum.get_thread(boostCache['mt_forum_post_id'])
-            #                 if forumPost:
-            #                     await forumPost.send('Le boost a été modifié :', embed=embed)
+                        if any(boost[el] != boostCache[el] for el in update_fields):
+                            forumPost = mtForum.get_thread(boostCache['mt_forum_post_id'])
+                            if forumPost:
+                                await forumPost.send('Le boost a été modifié :', embed=embed)
 
-            #     else:
-            #         mtTags = [tag for tag in mtForum.available_tags if tag.name == arobase]
-            #         mtPost = await mtForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'', embed=embed, applied_tags=mtTags)
-            #         await mtPost.message.add_reaction('❓')
-            #         await mtPost.message.add_reaction('🍀')
-            #         await mtPost.message.add_reaction('👀')
-            #         await mtPost.message.add_reaction('❌')
-            #         boost['mt_forum_post_id'] = mtPost.thread.id
+                else:
+                    mtTags = [tag for tag in mtForum.available_tags if tag.name == arobase]
+                    mtPost = await mtForum.create_thread(name=boost['intitule'][:96] + '...', auto_archive_duration=60, content=f'', embed=embed, applied_tags=mtTags)
+                    await mtPost.message.add_reaction('❓')
+                    await mtPost.message.add_reaction('🍀')
+                    await mtPost.message.add_reaction('👀')
+                    await mtPost.message.add_reaction('❌')
+                    boost['mt_forum_post_id'] = mtPost.thread.id
 
             cache.append(boost) 
     try:
