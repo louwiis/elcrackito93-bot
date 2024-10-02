@@ -45,7 +45,7 @@ async def boosts():
 # create a slashcommands function that will return the diffenrece in % between two numbers in params
 @tree.command(
     name="value",
-    description="Calculate la value et la mise à jouer de la trueodds et de la cote prise",
+    description="Calcul de value et de mise en privé",
     guild=discord.Object(id=MT_SERVER_ID)
 )
 async def value(interaction, trueodds: float, taken_odds: float):
@@ -70,7 +70,7 @@ async def value(interaction, trueodds: float, taken_odds: float):
 
 @tree.command(
     name="public_value",
-    description="Calculate la value et la mise à jouer de la trueodds et de la cote prise",
+    description="Crée un post public avec le calcul de value et de mise",
     guild=discord.Object(id=MT_SERVER_ID)
 )
 async def public_value(interaction, trueodds: float, taken_odds: float):
@@ -229,7 +229,21 @@ async def bet(interaction, titre: str, cote: float, mise: float, sport: str, boo
                     print(f"Request failed with status: {response.status}")
 
     
-    await interaction.response.send_message("Bet créé", ephemeral=True)
+    # create an embed
+    embed = discord.Embed(
+        title=f"Nouveaux bet ajouté",
+        description=f"Voici les détails du bet ajouté :",
+        color=0xFFFFFF
+    )
+
+    embed.add_field(name="Titre", value=titre, inline=True)
+    embed.add_field(name="Cote", value=cote, inline=True)
+    embed.add_field(name="Mise", value=mise, inline=True)
+    embed.add_field(name="Sport", value=sport, inline=True)
+    embed.add_field(name="Bookmaker", value=bookmaker, inline=True)
+    embed.add_field(name="Pourcentage", value=pourcentage, inline=True)
+
+    await interaction.response.send_message(embed=embed, ephemeral=False)
 
 @bot.event
 async def on_ready():
